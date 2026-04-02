@@ -38,14 +38,14 @@ class MicropyGPS(object):
                 'June', 'July', 'August', 'September', 'October',
                 'November', 'December')
 
-    def __init__(self, local_offset=0, location_formatting='ddm'):
+    def __init__(self, local_offset=0, location_formatting='dd'):
         """
         Setup GPS Object Status Flags, Internal Data Registers, etc
             local_offset (int): Timzone Difference to UTC
             location_formatting (str): Style For Presenting Longitude/Latitude:
                                        Decimal Degree Minute (ddm) - 40° 26.767′ N
                                        Degrees Minutes Seconds (dms) - 40° 26′ 46″ N
-                                       Decimal Degrees (dd) - 40.446° N
+                                       Decimal Degrees (dd) - 40.446° N 
         """
 
         #####################
