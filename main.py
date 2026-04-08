@@ -1,5 +1,5 @@
 #CANSAT team ProximaAerospace 2026
-
+#cansat
 #import knižníc
 from machine import Pin,  SPI ,I2C, UART
 from time import sleep, ticks_ms, ticks_diff
@@ -32,8 +32,6 @@ gps = MicropyGPS()
 gps_serial = UART(0,baudrate=9600, tx=16, rx= 17)
 #v knižnici prepnúť na dd decimálne stupne
             
-   #pridať formátovanie
-        
 #nastavenie pre lora
       
 SCK = 2
@@ -53,52 +51,57 @@ lora = LoRa(
     spi,
     cs=Pin(CS, Pin.OUT),
     rx=Pin(RX, Pin.IN),
-    frequency=433,
+    frequency=433.4,
     bandwidth=250000,
     spreading_factor=9,
     coding_rate=5,
+    preamble_length=8,
+    crc = True,
+    #nastavenia musia byť identické na oby dvoch 
 )
 
-lora.send('AHOJ krutý svet!test test test test')
+#lora.send('AHOJ krutý svet!test test test test')
  #except:
 #   date, gcas, lat, lot, alt, spd, hdop = ("00/00/00",[0, 0, 0.0], 0.0,0.0, 0.0, 0.00, 0.0)
 stary_cas = 0.0
-
-
+# a=ticks_ms()
+# lora.send(bytearray(50))
+# print(ticks_diff(ticks_ms(),a))
+led.on()
+lora.send('OM4ATC-11,start')
+lora.send('OM4ATC-11,start')
 def main():
     global stary_cas
-    
     while True:
         while gps_serial.any():
-            #b=ticks_ms()c
             data = gps_serial.readline()
-            #print(data)
+            
             for byte in data:
                 stat = gps.update(chr(byte))
                 if stat is not None:
                     cas = gps.timestamp[2]
-                    if stary_cas  != cas:
+                    if stary_cas != cas:
                         blink()
                         date, gcas, lat, lot, alt, spd, hdop = gps.date_string('short'), gps.timestamp, gps.latitude[0], gps.longitude[0], gps.altitude, '{:02.2f}'.format(gps.speed[2]), gps.hdop
                         stary_cas = cas
                         
                         #debug
-#                         print(date, gcas)
+                        #print(date, gcas)
 #                         print('lat:',lat)
 #                         print('lot:',lot)
-#                         print('alt',alt)
+                        #print('alt',alt)
 #                         print('spd',spd)
 #                         print('hdop',hdop)
 #                         print()
                         readout = bmp280_i2c.measurements
-                        t, p = readout['t'], readout['p'] # vypočítať nadmorskú výšku
-                        a=ticks_ms()
-                        #lat = str(lat)
-                        lora.send(bytearray(str(t).encode(),',',str(t).encode(p)))
-                        print(ticks_diff(ticks_ms(),a))
-#                         print(t ,p )
-#                         print(f"Temperature: {readout['t']} °C, pressure: {readout['p']} hPa",'\n')
+                        t, p = readout['t'], readout['p']
                         
-                        #print(machine.freq())
-                                                             
+                        #a = ticks_ms()
+#                        print(t ,p )
+#                        print(f"Temperature: {readout['t']} °C, pressure: {readout['p']} hPa",'\n')
+                        #B_alt = 16000*(1+0.004*t)*(1013.25-p)/(1013.25+p) # nieje vobec presné # vypocet pre barometricku vysku
+                        lora.send(bytearray(b'OM4ATC-11'+","+str(gcas[0]).encode()+':'+str(gcas[1]).encode()+':'+str(gcas[2]).encode()+','+str(lat).encode()+','+str(lot).encode()+','+str(alt).encode()+','+str(round(t,2)).encode()+','+ str(round(p,3)).encode()))
+                        #print(ticks_diff(ticks_ms(),a))
+        
+
 main()
