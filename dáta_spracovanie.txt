@@ -1,0 +1,4 @@
+(stty raw; cat > file.csv) < /dev/cu.usbmodem5101
+tail -f file.csv
+gnuplot graf
+gnuplot graf_fotka
