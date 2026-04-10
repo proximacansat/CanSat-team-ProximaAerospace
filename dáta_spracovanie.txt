@@ -1,4 +1,23 @@
 (stty raw; cat > file.csv) < /dev/cu.usbmodem5101
+
+1.krok
+stty raw -echo; cat >  file.csv) < /dev/serial/by-id/usb-MicroPython_Board_in_FS_mode_e660382823497f35-if00
+
+
+
+2.krok
 tail -f file.csv
 gnuplot graf
+
+3.krok
 gnuplot graf_fotka
+
+4.krok
+awk -F, '$3 1= 0.0' file.csv > file_filtrovane.csv
+qgis
+
+
+1.prijímanie dát z groudstation
+2.generovanie grafou
+3.generovanie fotiek z grafou
+4.dávanie GPS dát na mapu 
